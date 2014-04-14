@@ -7,7 +7,7 @@
 #include <QDebug>
 
 ReversiRules::ReversiRules()
-	: lastMove("* *"), gameResult(Engine::Undefined), state(NULL), server(NULL)
+	: lastMove("* *"), gameResult(Engine::Undefined), state(NULL), ui(NULL), server(NULL)
 {
 }
 
@@ -50,10 +50,11 @@ bool ReversiRules::validateMove(int player, QString move)
 	}
 	lastMove = move;
 
-	usleep(100000);
-
 	if (state->makeMove(move)) {
-		ui->update();
+		if (ui) {
+			ui->update();
+			usleep(200000);
+		}
         broadcastState();
 		return true;
 	} else {
@@ -82,11 +83,14 @@ bool ReversiRules::parsePlayerArgs(QStringList args)
 bool ReversiRules::checkParams()
 {
 	QString boardSizeText = getParam("size");
+	QString uiText = getParam("enable-ui");
 
 	if (boardSizeText.isEmpty())
 		return false;
 
 	boardSize = boardSizeText.toInt();
+	hasUI = (uiText.toLower() == "true");
+		
 	return true;
 }
 
@@ -94,8 +98,10 @@ bool ReversiRules::init()
 {
 	static const int inactivePlayer = 3;
 	state = static_cast<ReversiGameState*>(createGameState(inactivePlayer));
-	ui = new ReversiGameWindow(state);
-	ui->show();
+	if (hasUI) {
+		ui = new ReversiGameWindow(state);
+		ui->show();
+	}
 
     server = new WebsocketServer();
 }

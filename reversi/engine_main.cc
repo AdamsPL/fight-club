@@ -11,7 +11,8 @@ int main(int argc, char **argv)
 	ReversiRules rr;
 	Engine engine(&rr);
 
-	rr.parseArgs(app.arguments());
+	if (!rr.parseArgs(app.arguments()))
+		return -1;
 
 	Player *p0 = engine.loadExternalPlayer(0);
 	Player *p1 = engine.loadExternalPlayer(1);

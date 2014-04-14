@@ -36,6 +36,8 @@ private:
 
 	int boardSize;
 	int player;
+	bool hasUI;
+
 	QString lastMove;
 	Engine::GameResult gameResult;
 	ReversiGameState *state;
