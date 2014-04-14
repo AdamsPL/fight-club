@@ -6,7 +6,7 @@
 #include "GameState.h"
 
 #include <QApplication>
-#include <QDebug>
+#include <QTextStream>
 
 Engine::Engine(GameRules *rules)
 	: rules(rules)
@@ -39,7 +39,8 @@ void Engine::receiveFromPlayer(int id, QString msg)
 {
 	PlayerListener *pl;
 	GameResult gameResult;
-
+	QTextStream out(stdout);
+	
 	msg = msg.toLower();
 
 	foreach (pl, listeners) {
@@ -52,10 +53,10 @@ void Engine::receiveFromPlayer(int id, QString msg)
 		return;
 	}
 
-	qDebug() << getPlayerName(id) << ':' << msg;
+	out << getPlayerName(id) << ':' << msg << endl;
 	
 	if (!rules->validateMove(id, msg)) {
-		qDebug() << "Warning!" << getPlayerName(id) << "made an invalid move! (" << msg << ")";
+		out << "Warning!" << getPlayerName(id) << "made an invalid move! (" << msg << ")" << endl;
 	}
 
 	gameResult = rules->getGameResult();
@@ -98,7 +99,9 @@ int Engine::getNextPlayer(int player)
 
 void Engine::onPlayerLeave(int id)
 {
-	qDebug() << "Warning!" << getPlayerName(id) << "has left the game";
+	QTextStream out(stdout);
+
+	out << "Warning!" << getPlayerName(id) << "has left the game" << endl;
 	
 	if (!rules) {
 		unregisterPlayer(players[id]);
@@ -123,6 +126,8 @@ void Engine::stop(GameResult res)
 
 void Engine::printStats(GameResult res)
 {
+	QTextStream out(stdout);
+
 	if (!rules)
 		return;
 
@@ -137,9 +142,9 @@ void Engine::printStats(GameResult res)
 		default: msg = QString("ERROR. Uknown game result: %1").arg(res); break;
 	}
 
-	qDebug() << "-------------------";
-	qDebug() << msg << p0 << "vs" << p1;
-	qDebug() << "-------------------";
+	out << "-------------------" << endl;
+	out << msg << ' ' << p0 << " vs " << p1 << endl;
+	out << "-------------------" << endl;
 
 	stop(res);
 }
