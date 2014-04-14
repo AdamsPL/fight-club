@@ -33,3 +33,8 @@ void Player::leave()
 {
 	emit playerLeftSignal(id);
 }
+
+QString Player::getName()
+{
+	return QString();
+}

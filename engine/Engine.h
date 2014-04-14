@@ -15,11 +15,12 @@ class Engine : public QObject
 Q_OBJECT
 
 public:
-	enum MoveResult
+	enum GameResult
 	{
-		ValidMove,
-		InvalidMove,
-		FinishingMove
+		Tie,
+		PlayerZeroWon,
+		PlayerOneWon,
+		Undefined
 	};
 	Engine(GameRules *rules = NULL);
 
@@ -34,6 +35,8 @@ public:
 
 	int getNextPlayer(int player);
 
+	QString getPlayerName(int player);
+
 protected:
 	QStringList getPlayerParams(int id);
 
@@ -42,9 +45,9 @@ private slots:
 	void onPlayerLeave(int id);
 
 private:
-	void stop();
+	void stop(GameResult res);
 	void forwardMove(int id, QString move);
-	void printStats();
+	void printStats(GameResult res);
 
 	GameRules *rules;
 	QMap<int, Player*> players;

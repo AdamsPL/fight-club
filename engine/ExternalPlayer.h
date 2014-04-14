@@ -15,6 +15,7 @@ public:
 
 	virtual bool init();
 	virtual bool cleanup();
+	virtual QString getName();
 
 	virtual void receiveMsg(QString msg);
 
@@ -29,6 +30,7 @@ private:
 
 	QProcess process;
 	QStringList arguments;
+	QString cmd;
 };
 
 #endif

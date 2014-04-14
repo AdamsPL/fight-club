@@ -38,20 +38,33 @@ void Engine::sendToPlayer(int id, QString msg)
 void Engine::receiveFromPlayer(int id, QString msg)
 {
 	PlayerListener *pl;
-	MoveResult result = ValidMove;
+	GameResult gameResult;
 
-	foreach (pl, listeners)
+	msg = msg.toLower();
+
+	foreach (pl, listeners) {
 		pl->receiveMsg(id, msg);
+	}
 
-	if (rules) {
-		qDebug() << id << ':' << msg;
-		result = rules->validateMove(id, msg);
+	
+	if (!rules) {
+		sendToPlayer(getNextPlayer(id), msg);
+		return;
 	}
-	switch(result) {
-		case ValidMove: sendToPlayer(getNextPlayer(id), msg); break;
-		case InvalidMove: qDebug() << "INVALID MOVE!"; stop();
-		case FinishingMove: printStats(); stop(); break;
+
+	qDebug() << getPlayerName(id) << ':' << msg;
+	
+	if (!rules->validateMove(id, msg)) {
+		qDebug() << "Warning!" << getPlayerName(id) << "made an invalid move! (" << msg << ")";
 	}
+
+	gameResult = rules->getGameResult();
+	if (gameResult == Undefined) {
+		sendToPlayer(getNextPlayer(id), msg);
+		return;
+	}
+
+	printStats(gameResult);
 }
 
 void Engine::registerPlayerListener(PlayerListener *listener)
@@ -85,32 +98,57 @@ int Engine::getNextPlayer(int player)
 
 void Engine::onPlayerLeave(int id)
 {
-	if (!players.contains(id))
-		return;
-	qDebug() << "Player" << id << " has left the game";
-	unregisterPlayer(players[id]);
+	qDebug() << "Warning!" << getPlayerName(id) << "has left the game";
+	
+	if (!rules) {
+		unregisterPlayer(players[id]);
+		stop(Tie);
+	}
 
-	if (players.count() == 0)
-		stop();
+	rules->onPlayerLeave(id);
+	unregisterPlayer(players[id]);
+	printStats(rules->getGameResult());
 }
 
-void Engine::stop()
+void Engine::stop(GameResult res)
 {
 	Player *p;
+
 	foreach (p, players.values()) {
 		p->cleanup();
 		unregisterPlayer(p);
 	}
-	QApplication::exit(0);
+	QApplication::exit(res);
 }
 
-void Engine::printStats()
+void Engine::printStats(GameResult res)
 {
 	if (!rules)
 		return;
-	int winner = rules->getWinner();
-	int p0 = rules->getPoints(winner);
-	int p1 = rules->getPoints(getNextPlayer(winner));
-	qDebug() << "Player" << winner << "won!";
-	qDebug() << p0 << "vs" << p1;
+
+	int p0 = rules->getPoints(0);
+	int p1 = rules->getPoints(1);
+	QString msg;
+
+	switch(res) {
+		case Tie: msg = "Game ended with TIE"; break;
+		case PlayerZeroWon: msg = getPlayerName(0) + " WON!"; break;
+		case PlayerOneWon: msg = getPlayerName(1) + " WON!"; break;
+		default: msg = QString("ERROR. Uknown game result: %1").arg(res); break;
+	}
+
+	qDebug() << "-------------------";
+	qDebug() << msg << p0 << "vs" << p1;
+	qDebug() << "-------------------";
+
+	stop(res);
+}
+
+QString Engine::getPlayerName(int player)
+{
+	QString label = QString("[%1]").arg(player);
+	if (!players.contains(player))
+		return label;
+
+	return players[player]->getName() + label;
 }

@@ -7,7 +7,7 @@
 #include <QDebug>
 
 ReversiRules::ReversiRules()
-	: lastMove("* *"), winner(-1), state(NULL), server(NULL)
+	: lastMove("* *"), gameResult(Engine::Undefined), state(NULL), server(NULL)
 {
 }
 
@@ -33,14 +33,20 @@ GameState *ReversiRules::createGameState(int player)
 	return new ReversiGameState(player, boardSize);
 }
 
-Engine::MoveResult ReversiRules::validateMove(int player, QString move)
+bool ReversiRules::validateMove(int player, QString move)
 {
-	if (move.toLower() == "pass" && lastMove.toLower() == "pass") {
-		if (getPoints(player) > getPoints(getNextPlayer(player)))
-			winner = player;
+	int p0 = getPoints(0);
+	int p1 = getPoints(1);
+
+	if (move == "pass" && lastMove == "pass") {
+		if (p0 > p1)
+			gameResult = Engine::PlayerZeroWon;
+		else if (p1 > p0)
+			gameResult = Engine::PlayerOneWon;
 		else
-			winner = getNextPlayer(player);
-		return Engine::FinishingMove;
+			gameResult = Engine::Tie;
+
+		return true;
 	}
 	lastMove = move;
 
@@ -49,9 +55,14 @@ Engine::MoveResult ReversiRules::validateMove(int player, QString move)
 	if (state->makeMove(move)) {
 		ui->update();
         broadcastState();
-		return Engine::ValidMove;
-	} else
-		return Engine::InvalidMove;
+		return true;
+	} else {
+		if (player == 0)
+			gameResult = Engine::PlayerOneWon;
+		else
+			gameResult = Engine::PlayerZeroWon;
+		return false;
+	}
 }
 
 bool ReversiRules::parsePlayerArgs(QStringList args)
@@ -89,11 +100,6 @@ bool ReversiRules::init()
     server = new WebsocketServer();
 }
 
-int ReversiRules::getWinner()
-{
-	return winner;
-}
-
 int ReversiRules::getPoints(int player)
 {
 	int result;
@@ -103,7 +109,9 @@ int ReversiRules::getPoints(int player)
 
 	result = state->getPoints(player);
 
-	if (winner == player)
+	if (gameResult == Engine::PlayerZeroWon && player == 0)
+		result += state->getEmpty();
+	if (gameResult == Engine::PlayerOneWon && player == 1)
 		result += state->getEmpty();
 
 	return result;
@@ -138,4 +146,20 @@ void ReversiRules::broadcastState()
     QString msg = params.join(separator);
 
     server->broadcast(msg);
+}
+
+Engine::GameResult ReversiRules::getGameResult()
+{
+	return gameResult;
+}
+
+void ReversiRules::onPlayerLeave(int player)
+{
+	if (gameResult != Engine::Undefined)
+		return;
+
+	if (player == 0) 
+		gameResult = Engine::PlayerOneWon;
+	else
+		gameResult = Engine::PlayerZeroWon;
 }

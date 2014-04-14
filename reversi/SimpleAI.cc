@@ -2,6 +2,8 @@
 
 #include <QDebug>
 
+#include <QApplication>
+
 SimpleAI::SimpleAI(ReversiGameState *state)
 	: Player(state), state(state)
 {
@@ -45,5 +47,6 @@ bool SimpleAI::init()
 {
 	if (getGameState()->getPlayer() == ReversiGameState::BLACK_PLAYER)
 		sendMsg(makeMove());
+
 	return true;
 }

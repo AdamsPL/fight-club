@@ -24,7 +24,7 @@ ExternalPlayer::~ExternalPlayer()
 
 bool ExternalPlayer::init()
 {
-	QString cmd = arguments.first();
+	cmd = arguments.first();
 	arguments.pop_front();
     process.start(cmd, arguments, QIODevice::ReadWrite | QIODevice::Unbuffered);
     return process.waitForStarted(-1);
@@ -74,3 +74,7 @@ void ExternalPlayer::sendCont()
 #endif
 }
 
+QString ExternalPlayer::getName()
+{
+	return cmd;
+}

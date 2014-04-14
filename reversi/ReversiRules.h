@@ -18,10 +18,11 @@ public:
 
 	virtual QStringList getExternalPlayerArgs(int player);
 	virtual GameState *createGameState(int player);
-	virtual Engine::MoveResult validateMove(int player, QString move);
+	virtual bool validateMove(int player, QString move);
+	virtual void onPlayerLeave(int player);
 	virtual bool init();
-	virtual int getWinner();
 	virtual int getPoints(int player);
+	virtual Engine::GameResult getGameResult();
 
 	bool parsePlayerArgs(QStringList args);
 
@@ -36,7 +37,7 @@ private:
 	int boardSize;
 	int player;
 	QString lastMove;
-	int winner;
+	Engine::GameResult gameResult;
 	ReversiGameState *state;
 	ReversiGameWindow *ui;
     WebsocketServer *server;

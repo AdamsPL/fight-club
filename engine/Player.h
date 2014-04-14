@@ -21,6 +21,7 @@ public:
 	void sendMsg(QString msg);
 	virtual bool init();
 	virtual bool cleanup();
+	virtual QString getName();
 
 signals:
 	void sendMsgSignal(int id, QString msg);
