@@ -22,7 +22,6 @@ function check
 	fi
 	$ENGINE --player0 $1 --player1 $2 ${ENGINE_PARAMS} 2>&1 | tee $LOGFILE
 	RES=${PIPESTATUS[0]}
-	echo "$RES"
 	if [ "$RES" -eq 0 ];
 	then
 		P0_PTS="1"
