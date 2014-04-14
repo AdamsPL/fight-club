@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <QFileInfo>
+
 #ifdef __LINUX__
 #include <sys/types.h>
 #include <signal.h>
@@ -76,5 +78,6 @@ void ExternalPlayer::sendCont()
 
 QString ExternalPlayer::getName()
 {
-	return cmd;
+	QFileInfo info(cmd);
+	return info.baseName();
 }
