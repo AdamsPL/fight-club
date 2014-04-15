@@ -3,8 +3,6 @@
 #include <iostream>
 #include <QStringList>
 
-#include <QDebug>
-
 const QString ReversiGameState::PASS = "pass";
 
 ReversiGameState::ReversiGameState(int player, int boardSize)

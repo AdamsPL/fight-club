@@ -15,7 +15,7 @@ Engine::Engine(GameRules *rules)
 
 bool Engine::registerPlayer(Player *player)
 {
-	connect(player, SIGNAL(sendMsgSignal(int, QString)), this, SLOT(receiveFromPlayer(int, QString)), Qt::QueuedConnection);
+	connect(player, SIGNAL(sendMsgSignal(int, QString, int)), this, SLOT(receiveFromPlayer(int, QString, int)), Qt::QueuedConnection);
 	connect(player, SIGNAL(playerLeftSignal(int)), this, SLOT(onPlayerLeave(int)), Qt::QueuedConnection);
 	players[player->getId()] = player;
 	return player->init();
@@ -35,28 +35,31 @@ void Engine::sendToPlayer(int id, QString msg)
 	players[id]->receiveMsg(msg);
 }
 
-void Engine::receiveFromPlayer(int id, QString msg)
+void Engine::receiveFromPlayer(int id, QString msg, int elapsed)
 {
 	PlayerListener *pl;
 	GameResult gameResult;
 	QTextStream out(stdout);
-	
+	MoveResult moveResult;
+
 	msg = msg.toLower();
 
 	foreach (pl, listeners) {
 		pl->receiveMsg(id, msg);
 	}
-
 	
 	if (!rules) {
 		sendToPlayer(getNextPlayer(id), msg);
 		return;
 	}
 
-	out << getPlayerName(id) << ':' << msg << endl;
+	out << getPlayerName(id) << " : " << msg << " [" << elapsed << " ms]" << endl;
 	
-	if (!rules->validateMove(id, msg)) {
-		out << "Warning!" << getPlayerName(id) << "made an invalid move! (" << msg << ")" << endl;
+	moveResult = rules->validateMove(id, msg, elapsed);
+	switch(moveResult) {
+		case InvalidMove: out << "Warning!" << getPlayerName(id) << "made an invalid move! (" << msg << ")" << endl; break;
+		case Timeout: out << "Warning!" << getPlayerName(id) << " exceeded his game time!" << endl; break;
+		case ValidMove: break;
 	}
 
 	gameResult = rules->getGameResult();

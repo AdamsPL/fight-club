@@ -2,8 +2,6 @@
 
 #include "ReversiGameState.h"
 
-#include <QDebug>
-
 ReversiGameWindow::ReversiGameWindow(ReversiGameState *state)
 	: player(state)
 {

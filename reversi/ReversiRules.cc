@@ -4,11 +4,12 @@
 #include "ReversiGameState.h"
 
 #include <unistd.h>
-#include <QDebug>
 
 ReversiRules::ReversiRules()
-	: lastMove("* *"), gameResult(Engine::Undefined), state(NULL), ui(NULL), server(NULL)
+	: lastMove("* *"), gameResult(Engine::Undefined), state(NULL), ui(NULL), server(NULL), checkTime(false)
 {
+	timeLeft[ReversiGameState::BLACK_PLAYER] = 0;
+	timeLeft[ReversiGameState::WHITE_PLAYER] = 0;
 }
 
 QStringList ReversiRules::getExternalPlayerArgs(int player)
@@ -16,11 +17,17 @@ QStringList ReversiRules::getExternalPlayerArgs(int player)
 	QString playerString = (player == ReversiGameState::BLACK_PLAYER) ? "b" : "w";
 	QString playerParam = getPlayerParamName(player);
 	int boardSize = getBoardSize() / 2;
+	QStringList result;
 
 	if (boardSize < 0)
 		return QStringList();
+	
+	result = getParamList(playerParam) << QString::number(boardSize) << playerString;
 
-	return (getParamList(playerParam) << QString::number(boardSize) << playerString);
+	if (checkTime)
+		result << QString::number(timeLeft[player]);
+
+	return result;
 }
 
 GameState *ReversiRules::createGameState(int player)
@@ -33,36 +40,53 @@ GameState *ReversiRules::createGameState(int player)
 	return new ReversiGameState(player, boardSize);
 }
 
-bool ReversiRules::validateMove(int player, QString move)
+Engine::GameResult playerToGameResult(int player)
+{
+	if (player == 0)
+		return Engine::PlayerZeroWon;
+	else
+		return Engine::PlayerOneWon;
+}
+
+Engine::MoveResult ReversiRules::returnMoveResult(Engine::MoveResult res, Engine::GameResult gameRes)
+{
+	gameResult = gameRes;
+	return res;
+}
+
+Engine::MoveResult ReversiRules::validateMove(int player, QString move, int elapsed)
 {
 	int p0 = getPoints(0);
 	int p1 = getPoints(1);
 
+	if (checkTime) {
+		timeLeft[player] -= elapsed;
+		if (timeLeft[player] < 0) {
+			return returnMoveResult(Engine::Timeout, playerToGameResult(getNextPlayer(player)));
+		}
+	}
+
 	if (move == "pass" && lastMove == "pass") {
 		if (p0 > p1)
-			gameResult = Engine::PlayerZeroWon;
+			return returnMoveResult(Engine::ValidMove, Engine::PlayerZeroWon);
 		else if (p1 > p0)
-			gameResult = Engine::PlayerOneWon;
+			return returnMoveResult(Engine::ValidMove, Engine::PlayerOneWon);
 		else
-			gameResult = Engine::Tie;
+			return returnMoveResult(Engine::ValidMove, Engine::Tie);
 
-		return true;
+		return Engine::ValidMove;
 	}
 	lastMove = move;
 
 	if (state->makeMove(move)) {
 		if (ui) {
 			ui->update();
-			usleep(200000);
+			usleep(500000);
 		}
         broadcastState();
-		return true;
+		return Engine::ValidMove;
 	} else {
-		if (player == 0)
-			gameResult = Engine::PlayerOneWon;
-		else
-			gameResult = Engine::PlayerZeroWon;
-		return false;
+		return returnMoveResult(Engine::InvalidMove, playerToGameResult(getNextPlayer(player)));
 	}
 }
 
@@ -84,6 +108,7 @@ bool ReversiRules::checkParams()
 {
 	QString boardSizeText = getParam("size");
 	QString uiText = getParam("enable-ui");
+	QString timeoutText = getParam("timeout");
 
 	if (boardSizeText.isEmpty())
 		return false;
@@ -91,6 +116,13 @@ bool ReversiRules::checkParams()
 	boardSize = boardSizeText.toInt();
 	hasUI = (uiText.toLower() == "true");
 		
+	if (!timeoutText.isEmpty()) {
+		int time = timeoutText.toInt();
+		checkTime = true;
+		timeLeft[ReversiGameState::BLACK_PLAYER] = time;
+		timeLeft[ReversiGameState::WHITE_PLAYER] = time;
+	}
+
 	return true;
 }
 
@@ -164,8 +196,5 @@ void ReversiRules::onPlayerLeave(int player)
 	if (gameResult != Engine::Undefined)
 		return;
 
-	if (player == 0) 
-		gameResult = Engine::PlayerOneWon;
-	else
-		gameResult = Engine::PlayerZeroWon;
+	gameResult = playerToGameResult(getNextPlayer(player));
 }

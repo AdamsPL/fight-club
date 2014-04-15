@@ -15,6 +15,12 @@ class Engine : public QObject
 Q_OBJECT
 
 public:
+	enum MoveResult
+	{
+		ValidMove,
+		InvalidMove,
+		Timeout
+	};
 	enum GameResult
 	{
 		Tie,
@@ -41,7 +47,7 @@ protected:
 	QStringList getPlayerParams(int id);
 
 private slots:
-	void receiveFromPlayer(int id, QString msg);
+	void receiveFromPlayer(int id, QString msg, int elapsed);
 	void onPlayerLeave(int id);
 
 private:

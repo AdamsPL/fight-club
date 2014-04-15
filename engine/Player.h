@@ -18,13 +18,13 @@ public:
 	inline int getId() const { return id; }
 	inline GameState *getGameState() const { return state; }
 
-	void sendMsg(QString msg);
+	void sendMsg(QString msg, int elapsed = 0);
 	virtual bool init();
 	virtual bool cleanup();
 	virtual QString getName();
 
 signals:
-	void sendMsgSignal(int id, QString msg);
+	void sendMsgSignal(int id, QString msg, int elapsed);
 	void msgReceivedSignal(QString msg);
 	void playerLeftSignal(int id);
 

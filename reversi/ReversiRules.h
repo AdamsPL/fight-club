@@ -18,7 +18,7 @@ public:
 
 	virtual QStringList getExternalPlayerArgs(int player);
 	virtual GameState *createGameState(int player);
-	virtual bool validateMove(int player, QString move);
+	virtual Engine::MoveResult validateMove(int player, QString move, int elapsed);
 	virtual void onPlayerLeave(int player);
 	virtual bool init();
 	virtual int getPoints(int player);
@@ -33,6 +33,7 @@ private:
 	virtual bool checkParams();
 	inline int getNextPlayer(int player) { return (player + 1) % 2; };
     void broadcastState();	
+	Engine::MoveResult returnMoveResult(Engine::MoveResult res, Engine::GameResult gameRes);
 
 	int boardSize;
 	int player;
@@ -43,6 +44,9 @@ private:
 	ReversiGameState *state;
 	ReversiGameWindow *ui;
     WebsocketServer *server;
+
+	bool checkTime;
+	int timeLeft[2];
 };
 
 #endif

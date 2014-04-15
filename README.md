@@ -18,5 +18,7 @@ Arena for algorithmic battles
 
 **--enable-ui true** - if set engine will display an UI with current game status
 
+**--timeout TIME** - if set engine will limit total time used by each players. Player whose move time expires loses the game
+
 # Tournament mode #
 	./tournament.sh PLAYER_LIST.txt PATH_TO_ENGINE ENGINE_PARAMS

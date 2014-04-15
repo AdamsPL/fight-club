@@ -26,10 +26,15 @@ ExternalPlayer::~ExternalPlayer()
 
 bool ExternalPlayer::init()
 {
+	bool started;
+
 	cmd = arguments.first();
 	arguments.pop_front();
     process.start(cmd, arguments, QIODevice::ReadWrite | QIODevice::Unbuffered);
-    return process.waitForStarted(-1);
+	started = process.waitForStarted(-1);
+	lastTimestamp.start();
+
+	return started;
 }
 
 bool ExternalPlayer::cleanup()
@@ -40,8 +45,9 @@ bool ExternalPlayer::cleanup()
 
 void ExternalPlayer::onStdOut()
 {
+	int elapsed = lastTimestamp.elapsed();
     while(process.canReadLine()) {
-        sendMsg(process.readLine().trimmed());
+        sendMsg(process.readLine().trimmed(), elapsed);
     }
 	sendStop();
 }
@@ -59,6 +65,7 @@ void ExternalPlayer::onExit(int exitCode, QProcess::ExitStatus status)
 void ExternalPlayer::receiveMsg(QString msg)
 {
     process.write(msg.append("\n").toAscii());
+	lastTimestamp.start();
 	sendCont();
 }
 

@@ -16,7 +16,7 @@ public:
 	virtual bool init() = 0;
 	virtual QStringList getExternalPlayerArgs(int player) = 0;
 	virtual GameState *createGameState(int player) = 0;
-	virtual bool validateMove(int player, QString move) = 0;
+	virtual Engine::MoveResult validateMove(int player, QString move, int elapsed) = 0;
 	virtual void onPlayerLeave(int player) = 0;
 	virtual int getPoints(int player) = 0;
 	virtual Engine::GameResult getGameResult() = 0;

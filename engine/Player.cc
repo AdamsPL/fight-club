@@ -2,16 +2,14 @@
 
 #include "GameState.h"
 
-#include <QDebug>
-
 Player::Player(GameState *state)
 	: QObject(0), state(state), id(state->getPlayer())
 {
 }
 
-void Player::sendMsg(QString msg)
+void Player::sendMsg(QString msg, int elapsed)
 {
-	emit sendMsgSignal(id, msg);
+	emit sendMsgSignal(id, msg, elapsed);
 }
 
 void Player::receiveMsg(QString msg)

@@ -1,7 +1,5 @@
 #include "SimpleAI.h"
 
-#include <QDebug>
-
 #include <QApplication>
 
 SimpleAI::SimpleAI(ReversiGameState *state)

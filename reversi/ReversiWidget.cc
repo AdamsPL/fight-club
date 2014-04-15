@@ -9,8 +9,6 @@
 
 #include "ui_ReversiWindow.h"
 
-#include <QDebug>
-
 ReversiWidget::ReversiWidget(QWidget *parent)
 	: QWidget(parent), state(NULL), boardWidth(1)
 {

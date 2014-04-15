@@ -4,6 +4,7 @@
 #include "Player.h"
 
 #include <QProcess>
+#include <QTime>
 
 class ExternalPlayer : public Player
 {
@@ -31,6 +32,7 @@ private:
 	QProcess process;
 	QStringList arguments;
 	QString cmd;
+	QTime lastTimestamp;
 };
 
 #endif

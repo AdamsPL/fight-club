@@ -2,8 +2,6 @@
 
 #include <cstdio>
 
-#include <QDebug>
-
 StdoutPlayer::StdoutPlayer(GameState *state)
 	: Player(state), isRunning(true)
 {
