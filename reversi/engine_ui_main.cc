@@ -1,11 +1,11 @@
 #include "ReversiRules.h"
 #include <engine/Engine.h>
 
-#include <QCoreApplication>
+#include <QApplication>
 
 int main(int argc, char **argv)
 {
-	QCoreApplication app(argc, argv);
+	QApplication app(argc, argv);
 
 	ReversiRules rr;
 	Engine engine(&rr);

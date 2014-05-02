@@ -36,3 +36,6 @@ TARGET_LINK_LIBRARIES(bot_player ${QT_LIBRARIES} engine)
 
 ADD_EXECUTABLE(engine_cli engine_main.cc ${SRC} ${HEADERS_MOC} ${FORMS_UIC})
 TARGET_LINK_LIBRARIES(engine_cli ${QT_LIBRARIES} engine)
+
+ADD_EXECUTABLE(engine_ui engine_ui_main.cc ${SRC} ${HEADERS_MOC} ${FORMS_UIC})
+TARGET_LINK_LIBRARIES(engine_ui ${QT_LIBRARIES} engine)
