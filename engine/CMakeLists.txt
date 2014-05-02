@@ -13,6 +13,7 @@ SET(SRC
 	PlayerListener.cc
 	StdoutPlayer.cc
 	WebsocketServer.cc
+	Logger.cc
 )
 
 SET(HEADERS

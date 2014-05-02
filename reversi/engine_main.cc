@@ -18,6 +18,6 @@ int main(int argc, char **argv)
 
 	engine.registerPlayer(p0);
 	engine.registerPlayer(p1);
-    
+
 	return app.exec();
 }
