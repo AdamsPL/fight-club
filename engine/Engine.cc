@@ -87,8 +87,13 @@ void Engine::unregisterPlayerListener(PlayerListener *listener)
 
 Player *Engine::loadExternalPlayer(int id)
 {
+	QStringList params;
 	GameState *state = rules->createGameState(id);
-	ExternalPlayer *player = new ExternalPlayer(state, rules->getExternalPlayerArgs(id));
+
+	params = getParamList(rules->getPlayerParamName(id));
+	params << rules->getExternalPlayerArgs(id);
+	ExternalPlayer *player = new ExternalPlayer(state, params);
+
 	return player;
 }
 
@@ -159,4 +164,41 @@ QString Engine::getPlayerName(int player)
 		return label;
 
 	return players[player]->getName() + label;
+}
+
+bool Engine::parseArgs(QStringList args)
+{
+	QString lastParam;
+	QString tmp;
+
+	foreach (tmp, args) {
+		if (tmp.startsWith("--")) {
+			lastParam = tmp.remove("--");
+			parameters[lastParam] = QStringList();
+			continue;
+		}
+		if (lastParam.isEmpty())
+			continue;
+
+		parameters[lastParam] << tmp;
+	}
+	if (!rules->readParams(this))
+		return false;
+	return true;
+}
+
+QString Engine::getParam(QString name)
+{
+	if (!parameters.contains(name))
+		return QString();
+	if (parameters[name].isEmpty())
+		return QString();
+	return parameters[name].first();
+}
+
+QStringList Engine::getParamList(QString name)
+{
+	if (!parameters.contains(name))
+		return QStringList();
+	return parameters[name];
 }
