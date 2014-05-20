@@ -36,11 +36,11 @@ private:
 
 	int boardSize;
 	int player;
-	//bool hasUI;
+	bool hasUI;
 
 	QString lastMove;
 	ReversiGameState *state;
-	//ReversiGameWindow *ui;
+	ReversiGameWindow *ui;
     //WebsocketServer *server;
 
 	bool checkTime;

@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 ReversiRules::ReversiRules()
-	: lastMove("* *"), state(NULL), /*ui(NULL), server(NULL),*/ checkTime(false)
+	: lastMove("* *"), state(NULL), ui(NULL), /*server(NULL),*/ checkTime(false)
 {
 	timeLeft[ReversiGameState::BLACK_PLAYER] = 0;
 	timeLeft[ReversiGameState::WHITE_PLAYER] = 0;
@@ -79,11 +79,11 @@ Engine::MoveResult ReversiRules::validateMove(int player, QString move, int elap
 	lastMove = move;
 
 	if (state->makeMove(move)) {
-		/*
 		if (ui) {
 			ui->update();
 			usleep(500000);
 		}
+		/*
         broadcastState();
 		*/
 		return Engine::ValidMove;
@@ -117,9 +117,7 @@ bool ReversiRules::readParams(Engine *engine)
 		return false;
 
 	boardSize = boardSizeText.toInt();
-	/*
 	hasUI = (uiText.toLower() == "true");
-	*/
 		
 	if (!timeoutText.isEmpty()) {
 		int time = timeoutText.toInt();
@@ -129,6 +127,10 @@ bool ReversiRules::readParams(Engine *engine)
 	}
 
 	state = static_cast<ReversiGameState*>(createGameState(inactivePlayer));
+	if (hasUI) {
+		ui = new ReversiGameWindow(state);
+		ui->show();
+	}
 	return true;
 }
 
