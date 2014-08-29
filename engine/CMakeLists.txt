@@ -4,17 +4,7 @@ INCLUDE(${QT_USE_FILE})
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -Wall -pedantic ")
 
-SET(SRC
-	Engine.cc
-	ExternalPlayer.cc
-	GameRules.cc
-	GameState.cc
-	Player.cc
-	PlayerListener.cc
-	StdoutPlayer.cc
-	WebsocketServer.cc
-	Logger.cc
-)
+AUX_SOURCE_DIRECTORY(. SRC)
 
 SET(HEADERS
 	Engine.h
