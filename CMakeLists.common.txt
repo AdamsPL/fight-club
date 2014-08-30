@@ -1,0 +1,16 @@
+PROJECT(MotoArena)
+
+MACRO(SUBDIRLIST result)
+	FILE(GLOB children *)
+	SET(dirlist "")
+	FOREACH(child ${children})
+		IF (IS_DIRECTORY ${child})
+			LIST(APPEND dirlist ${child})
+		ENDIF()
+	ENDFOREACH()
+	SET(${result} ${dirlist})
+ENDMACRO()
+
+MACRO(GET_BINARY_FILENAME result subproject)
+	SET(${result} ${CMAKE_PROJECT}-${subproject})
+ENDMACRO()

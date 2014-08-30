@@ -10,7 +10,6 @@ SET(HEADERS
 	Engine.h
 	Player.h
 	ExternalPlayer.h
-	WebsocketServer.h
 )
 
 QT4_WRAP_CPP(HEADERS_MOC ${HEADERS})
