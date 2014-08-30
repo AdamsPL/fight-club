@@ -1,15 +1,13 @@
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtNetwork REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore REQUIRED)
 
 INCLUDE(${QT_USE_FILE})
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -Wall -pedantic ")
-
-AUX_SOURCE_DIRECTORY(. SRC)
+SET(SRC
+	GameEnvironment.cc
+	main.cc
+)
 
 SET(HEADERS
-	Engine.h
-	Player.h
-	ExternalPlayer.h
 )
 
 QT4_WRAP_CPP(HEADERS_MOC ${HEADERS})

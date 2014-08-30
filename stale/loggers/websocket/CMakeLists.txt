@@ -3,9 +3,11 @@ FIND_PACKAGE(Qt4 COMPONENTS QtCore QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 INCLUDE(../../CMakeLists.common.txt)
 
-AUX_SOURCE_DIRECTORY(. SRC)
+SET(SRC
+	main.cc
+)
+
 SET(HEADERS
-	WebsocketServer.h
 )
 
 QT4_WRAP_CPP(HEADERS_MOC ${HEADERS})
