@@ -10,7 +10,7 @@ include(${QT_USE_FILE})
 
 include_directories(${GTEST_INCLUDE_DIR} ../engine/)
 
-set(NAME "engine_ut")
+set(NAME engine-tests)
 set(SRC
 	../engine/Config.cc
 	testGameEnvironment.cc
@@ -29,4 +29,8 @@ add_test(
 	COMMAND ${NAME}
 )
 
-add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy example.cfg ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_target(${NAME}-files)
+foreach(file ${DEPLOYABLE})
+	add_custom_command(TARGET ${NAME}-files PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy example.cfg ${CMAKE_CURRENT_BINARY_DIR})
+endforeach()
+add_dependencies(${NAME} ${NAME}-files)

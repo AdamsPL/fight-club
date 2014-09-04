@@ -1,5 +1,6 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
+enable_testing()
 
-INCLUDE(CMakeLists.common.txt)
+include(CMakeLists.common.txt)
 
 FIND_CMAKE_DIRS_RECURSIVE(subdirs)
