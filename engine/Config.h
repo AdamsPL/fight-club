@@ -11,7 +11,7 @@ public:
 	const QString getValue(QString label) const;
 
 private:
-	QMap< QString, QString> storedValues;
+	QMap<QString, QString> storedValues;
 };
 
 #endif /* _CONFIG_H */

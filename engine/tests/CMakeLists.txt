@@ -34,3 +34,4 @@ foreach(FILE ${DEPLOYABLE})
 	add_custom_command(TARGET ${NAME}-files PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 add_dependencies(${NAME} ${NAME}-files)
+
